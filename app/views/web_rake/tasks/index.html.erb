@@ -71,23 +71,13 @@
     padding: 60px 20px;
     color: #6c757d;
   }
-
-  .task-count {
-    background-color: #007bff;
-    color: white;
-    padding: 2px 8px;
-    border-radius: 12px;
-    font-size: 0.875rem;
-    margin-left: 10px;
-  }
 </style>
 
 <div class="page-header">
   <h2 class="page-title">
     Available Rake Tasks
-    <span class="task-count"><%= @tasks.count %></span>
   </h2>
-  <p class="page-subtitle">Click any task to run it. Only showing custom tasks from lib/tasks/ directory.</p>
+  <p class="page-subtitle">Click any task to run it. Showing db:seed and custom tasks from lib/tasks/</p>
 </div>
 
 <% if @tasks.any? %>

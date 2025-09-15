@@ -14,8 +14,9 @@ module WebRake
     def execute
       task_name = params[:id].gsub('__', ':')
 
-      # Check if this is one of our custom tasks
-      unless extract_task_names_from_files.include?(task_name)
+      # Check if this is one of our allowed tasks (custom tasks + db:seed)
+      allowed_tasks = extract_task_names_from_files + ['db:seed']
+      unless allowed_tasks.include?(task_name)
         redirect_to root_path, alert: "Task not found"
         return
       end
@@ -79,6 +80,9 @@ module WebRake
       # First, get the names of tasks defined in lib/tasks files
       custom_task_names = extract_task_names_from_files
 
+      # Always include db:seed task
+      custom_task_names << 'db:seed'
+
       # Ensure all tasks are loaded
       Rails.application.load_tasks
 
@@ -134,8 +138,9 @@ module WebRake
     def find_task
       task_name = params[:id].gsub('__', ':')
 
-      # Check if this is one of our custom tasks
-      return nil unless extract_task_names_from_files.include?(task_name)
+      # Check if this is one of our allowed tasks (custom tasks + db:seed)
+      allowed_tasks = extract_task_names_from_files + ['db:seed']
+      return nil unless allowed_tasks.include?(task_name)
 
       # Ensure tasks are loaded
       Rails.application.load_tasks

@@ -1,10 +1,19 @@
 # WebRake
 
-WebRake is a Rails engine that provides a web interface for discovering and executing custom Rake tasks in your Rails application. It includes HTTP basic authentication for security and automatically mounts at `/rails/tasks` without requiring any route configuration.
+WebRake is a Rails engine designed for production environments that provides a secure web interface for executing essential Rake tasks in your deployed Rails application. It includes HTTP basic authentication for security and automatically mounts at `/rails/tasks` without requiring any route configuration.
+
+## Purpose
+
+This gem is specifically designed for production/deployed applications where you need quick access to:
+- Seed your database with `db:seed`
+- Run custom data population tasks (like `sample_data`)
+- Execute other custom maintenance tasks
+
+Perfect for situations where you don't have shell access or need to quickly run tasks on deployed platforms like Render, Heroku, or similar services.
 
 ## Features
 
-- Automatic discovery of custom Rake tasks from `lib/tasks/` directory
+- Exposes `db:seed` and custom Rake tasks from `lib/tasks/` directory
 - Web interface with one-click task execution
 - HTTP basic authentication for security
 - Real-time output capture (stdout and stderr)
@@ -14,11 +23,11 @@ WebRake is a Rails engine that provides a web interface for discovering and exec
 
 ## Which Tasks Are Shown
 
-WebRake only displays custom Rake tasks that:
-- Are defined in files within your `lib/tasks/` directory
-- Have the `:environment` dependency (e.g., `task sample_data: :environment do`)
+WebRake displays:
+- The `db:seed` task for database seeding
+- Custom Rake tasks defined in your `lib/tasks/` directory
 
-This means system tasks (like `db:migrate`, `assets:precompile`, etc.) are intentionally hidden to keep the interface focused on your application-specific tasks.
+System tasks (like `db:migrate`, `db:drop`, `assets:precompile`, etc.) are intentionally hidden for security reasons.
 
 ## Installation
 
@@ -84,13 +93,6 @@ Once installed and configured, WebRake automatically mounts at `/rails/tasks` in
 - Tasks are executed in the same process as your Rails app
 - Output is captured using StringIO redirection
 - Tasks are automatically re-enabled after execution for repeat runs
-
-## Security Considerations
-
-- **Always use strong credentials** - Anyone with access can run rake tasks
-- **Be cautious in production** - Running certain rake tasks can modify or destroy data
-- **Consider IP restrictions** - You may want to add additional security layers like IP whitelisting
-- **Monitor usage** - Keep logs of task executions for audit purposes
 
 ## Development
 
