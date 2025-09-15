@@ -4,7 +4,7 @@ module WebRake
 
     initializer 'web_rake.mount_routes' do |app|
       app.routes.append do
-        mount WebRake::Engine, at: '/web_rake'
+        mount WebRake::Engine, at: '/rails/tasks'
       end
     end
 
