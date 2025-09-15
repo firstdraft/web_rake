@@ -8,7 +8,7 @@ module WebRake
 
     def show
       @task = find_task
-      redirect_to tasks_path, alert: "Task not found" unless @task
+      redirect_to root_path, alert: "Task not found" unless @task
     end
 
     def execute
@@ -16,7 +16,7 @@ module WebRake
 
       # Check if this is one of our custom tasks
       unless extract_task_names_from_files.include?(task_name)
-        redirect_to tasks_path, alert: "Task not found"
+        redirect_to root_path, alert: "Task not found"
         return
       end
 
