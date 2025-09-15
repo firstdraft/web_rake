@@ -1,0 +1,118 @@
+<style>
+  .tasks-list {
+    list-style: none;
+  }
+
+  .task-item {
+    padding: 15px;
+    margin-bottom: 10px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    border: 1px solid #dee2e6;
+    transition: all 0.3s ease;
+  }
+
+  .task-item:hover {
+    background-color: #e9ecef;
+    transform: translateX(5px);
+  }
+
+  .task-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .task-name {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 1.1rem;
+  }
+
+  .task-description {
+    color: #6c757d;
+    margin-bottom: 10px;
+  }
+
+  .run-button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+  }
+
+  .run-button:hover {
+    background-color: #218838;
+  }
+
+  .page-header {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #dee2e6;
+  }
+
+  .page-title {
+    font-size: 2rem;
+    color: #2c3e50;
+    margin-bottom: 10px;
+  }
+
+  .page-subtitle {
+    color: #6c757d;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #6c757d;
+  }
+
+  .task-count {
+    background-color: #007bff;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    margin-left: 10px;
+  }
+</style>
+
+<div class="page-header">
+  <h2 class="page-title">
+    Available Rake Tasks
+    <span class="task-count"><%= @tasks.count %></span>
+  </h2>
+  <p class="page-subtitle">Click any task to run it. Tasks will be executed in the context of your Rails application.</p>
+</div>
+
+<% if @tasks.any? %>
+  <ul class="tasks-list">
+    <% @tasks.each do |task| %>
+      <li class="task-item">
+        <div class="task-header">
+          <span class="task-name"><%= task.name %></span>
+        </div>
+
+        <% if task.comment.present? %>
+          <div class="task-description"><%= task.comment %></div>
+        <% end %>
+
+        <%= form_with url: execute_task_path(id: task.name.gsub(':', '__')),
+                      method: :post,
+                      local: true do |form| %>
+          <%= form.submit "Run Task", class: "run-button" %>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <div class="empty-state">
+    <h3>No Rake Tasks Found</h3>
+    <p>Make sure your Rails application has loaded its tasks.</p>
+  </div>
+<% end %>
