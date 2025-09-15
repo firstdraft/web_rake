@@ -1,16 +1,24 @@
 # WebRake
 
-WebRake is a Rails engine that provides a web interface for discovering and executing Rake tasks in your Rails application. It includes HTTP basic authentication for security and automatically mounts at `/web_rake` without requiring any route configuration.
+WebRake is a Rails engine that provides a web interface for discovering and executing custom Rake tasks in your Rails application. It includes HTTP basic authentication for security and automatically mounts at `/web_rake` without requiring any route configuration.
 
 ## Features
 
-- Automatic discovery of all available Rake tasks
+- Automatic discovery of custom Rake tasks from `lib/tasks/` directory
 - Web interface with one-click task execution
 - HTTP basic authentication for security
 - Real-time output capture (stdout and stderr)
 - Execution timing and status reporting
 - Clean, responsive UI
 - Zero configuration required for routes
+
+## Which Tasks Are Shown
+
+WebRake only displays custom Rake tasks that:
+- Are defined in files within your `lib/tasks/` directory
+- Have the `:environment` dependency (e.g., `task sample_data: :environment do`)
+
+This means system tasks (like `db:migrate`, `assets:precompile`, etc.) are intentionally hidden to keep the interface focused on your application-specific tasks.
 
 ## Installation
 

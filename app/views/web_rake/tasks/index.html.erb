@@ -87,7 +87,7 @@
     Available Rake Tasks
     <span class="task-count"><%= @tasks.count %></span>
   </h2>
-  <p class="page-subtitle">Click any task to run it. Tasks will be executed in the context of your Rails application.</p>
+  <p class="page-subtitle">Click any task to run it. Only showing custom tasks from lib/tasks/ directory.</p>
 </div>
 
 <% if @tasks.any? %>
@@ -112,7 +112,8 @@
   </ul>
 <% else %>
   <div class="empty-state">
-    <h3>No Rake Tasks Found</h3>
-    <p>Make sure your Rails application has loaded its tasks.</p>
+    <h3>No Custom Rake Tasks Found</h3>
+    <p>No rake tasks were found in your lib/tasks/ directory.</p>
+    <p>Create a .rake file in lib/tasks/ with tasks that depend on :environment.</p>
   </div>
 <% end %>

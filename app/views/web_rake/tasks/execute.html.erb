@@ -189,11 +189,5 @@
 <% end %>
 
 <div class="actions">
-  <%= form_with url: execute_task_path(id: task.name.gsub(':', '__')),
-                method: :post,
-                local: true do |form| %>
-    <%= form.submit "Run Again", class: "btn btn-primary" %>
-  <% end %>
-
-  <%= link_to "Back to Tasks", tasks_path, class: "btn btn-secondary" %>
+  <%= link_to "Back to Tasks", tasks_path, class: "btn btn-primary" %>
 </div>
