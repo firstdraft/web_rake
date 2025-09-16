@@ -106,6 +106,11 @@ module WebRake
           task_names << match[0]
         end
 
+        # Pattern for: task({ sample_data: :environment }) - Ruby 1.9+ syntax with parens and braces
+        content.scan(/task\s*\(\s*\{\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*:/).each do |match|
+          task_names << match[0]
+        end
+
         # Pattern for: task :sample_data => :environment
         content.scan(/task\s+:([a-zA-Z_][a-zA-Z0-9_]*)\s*=>/).each do |match|
           task_names << match[0]
