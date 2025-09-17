@@ -104,11 +104,9 @@ module WebRake
 
       # Find the task
       task = Rake::Task[task_name] rescue nil
-      return nil unless task
 
       # Check if it's db:seed or defined in lib/tasks
-      return task if task_name == 'db:seed'
-      return task if task_from_lib_tasks?(task)
+      return task if task_from_lib_tasks?(task) || task_name == "db:seed"
 
       nil
     end
