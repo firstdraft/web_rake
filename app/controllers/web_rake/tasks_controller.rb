@@ -18,9 +18,8 @@ module WebRake
     def execute
       task_name = params[:id].gsub('__', ':')
 
-      # Check if this is one of our allowed tasks (custom tasks + db:seed)
-      allowed_tasks = extract_task_names_from_files + ['db:seed']
-      unless allowed_tasks.include?(task_name)
+      # Use find_task to validate the task is allowed
+      unless find_task
         redirect_to root_path, alert: "Task not found"
         return
       end
@@ -80,81 +79,43 @@ module WebRake
     end
 
     def custom_tasks
-      # First, get the names of tasks defined in lib/tasks files
-      custom_task_names = extract_task_names_from_files
-
-      # Always include db:seed task
-      custom_task_names << 'db:seed'
-
       # Ensure all tasks are loaded
       Rails.application.load_tasks
 
-      # Get only the tasks that match our custom task names
-      custom_task_names.filter_map do |name|
-        Rake::Task[name] rescue nil
-      end.select(&:actions)
-    end
+      tasks = []
 
-    def extract_task_names_from_files
-      task_names = []
+      # Find tasks defined in lib/tasks or db:seed
+      Rake.application.tasks.each do |task|
+        next if task.actions.blank?
 
-      # Parse each rake file to extract task names
-      Dir.glob(Rails.root.join('lib/tasks/**/*.rake')).each do |file|
-        content = File.read(file)
-
-        # Match various task definition patterns
-
-        # Pattern for: task({ :sample_data => :environment })
-        content.scan(/task\s*\(\s*\{\s*:([a-zA-Z_][a-zA-Z0-9_]*)\s*=>/).each do |match|
-          task_names << match[0]
-        end
-
-        # Pattern for: task({ sample_data: :environment }) - Ruby 1.9+ syntax with parens and braces
-        content.scan(/task\s*\(\s*\{\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*:/).each do |match|
-          task_names << match[0]
-        end
-
-        # Pattern for: task :sample_data => :environment
-        content.scan(/task\s+:([a-zA-Z_][a-zA-Z0-9_]*)\s*=>/).each do |match|
-          task_names << match[0]
-        end
-
-        # Pattern for: task "sample_data" => :environment
-        content.scan(/task\s+["']([a-zA-Z_][a-zA-Z0-9_]*)["']\s*=>/).each do |match|
-          task_names << match[0]
-        end
-
-        # Pattern for: task sample_data: :environment (Ruby 1.9+ syntax)
-        content.scan(/task\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*:/).each do |match|
-          task_names << match[0]
-        end
-
-        # Pattern for: task(:sample_data)
-        content.scan(/task\s*\(\s*:([a-zA-Z_][a-zA-Z0-9_]*)\s*\)/).each do |match|
-          task_names << match[0]
-        end
-
-        # Pattern for: desc "..." \n task :name
-        content.scan(/desc\s+.*?\n\s*task\s+:([a-zA-Z_][a-zA-Z0-9_]*)/).each do |match|
-          task_names << match[0]
+        if task_from_lib_tasks?(task) || task.name == "db:seed"
+          tasks << task
         end
       end
 
-      task_names.uniq
+      tasks
     end
 
     def find_task
       task_name = params[:id].gsub('__', ':')
 
-      # Check if this is one of our allowed tasks (custom tasks + db:seed)
-      allowed_tasks = extract_task_names_from_files + ['db:seed']
-      return nil unless allowed_tasks.include?(task_name)
-
       # Ensure tasks are loaded
       Rails.application.load_tasks
 
       # Find the task
-      Rake::Task[task_name] rescue nil
+      task = Rake::Task[task_name] rescue nil
+
+      # Check if it's db:seed or defined in lib/tasks
+      return task if task_from_lib_tasks?(task) || task_name == "db:seed"
+
+      nil
+    end
+
+    def task_from_lib_tasks?(task)
+      return false if task.actions.blank?
+
+      source_path = task.actions.first.source_location&.first
+      source_path.present? && source_path.include?(Rails.root.join("lib/tasks").to_s)
     end
   end
 end
