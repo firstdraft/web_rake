@@ -84,17 +84,11 @@ module WebRake
 
       tasks = []
 
-      # Always include db:seed
-      if (seed_task = Rake::Task['db:seed'] rescue nil)
-        tasks << seed_task
-      end
-
-      # Find tasks defined in lib/tasks by checking their source location
+      # Find tasks defined in lib/tasks or db:seed
       Rake.application.tasks.each do |task|
         next if task.actions.blank?
-        next if task.name == 'db:seed' # Already added above
 
-        if task_from_lib_tasks?(task)
+        if task_from_lib_tasks?(task) || task.name == "db:seed"
           tasks << task
         end
       end
@@ -123,9 +117,7 @@ module WebRake
       return false if task.actions.blank?
 
       source_path = task.actions.first.source_location&.first
-      source_path.present? &&
-        source_path.include?(Rails.root.to_s) &&
-        source_path.include?('/lib/tasks/')
+      source_path.present? && source_path.include?(Rails.root.join("lib/tasks").to_s)
     end
   end
 end
