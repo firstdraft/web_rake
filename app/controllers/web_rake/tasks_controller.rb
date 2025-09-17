@@ -1,3 +1,7 @@
+require 'rake'
+require 'open3'
+require 'ostruct'
+
 module WebRake
   class TasksController < ApplicationController
     before_action :ensure_environment_loaded
@@ -35,7 +39,6 @@ module WebRake
 
         # Run the rake task in a subprocess to avoid state issues
         # This ensures clean execution every time
-        require 'open3'
 
         # Build the rake command
         rake_command = "bundle exec rake #{task_name}"
